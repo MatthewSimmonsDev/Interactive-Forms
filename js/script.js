@@ -39,7 +39,6 @@ function colorEnableDisable(){
   const colorOptions = color.children;
   color.disabled = true;
 
-  // const shirtDesigns = document.querySelector('#shirt-designs');
   design.addEventListener('change', (e) => {
     color.disabled = false;
 
@@ -65,7 +64,7 @@ function activityTotalCost(){
   const totalCost = document.querySelector('#activities-cost');
   const registerForActivities = document.querySelector('#activities');
   
-  registerForActivities.addEventListener('change', () => {
+  registerForActivities.addEventListener('change', (e) => {
     const activities = document.querySelectorAll('.activity-cost');
     const checkboxes = document.querySelectorAll('input[type=checkbox]');
     let sumTotal = 0;
@@ -79,6 +78,23 @@ function activityTotalCost(){
       }
       totalCost.textContent = 'Total: $' + sumTotal;
     }
+
+    // Disable same time activity selections
+    for (let i = 0; i < checkboxes.length; i++){
+      const spanSibling = checkboxes[i].nextElementSibling.nextElementSibling.textContent;
+      const targetTextContent = e.target.nextElementSibling.nextElementSibling.textContent;
+      if(e.target.checked){
+        if(e.target !== checkboxes[i] && spanSibling === targetTextContent){
+          checkboxes[i].disabled = true;
+          checkboxes[i].parentElement.classList.add('disabled');
+        }
+        }else {
+        checkboxes[i].disabled = false;
+        checkboxes[i].parentElement.classList.remove('disabled');
+      }
+
+    }
+
   })
 }
 
@@ -98,14 +114,10 @@ function paymentInfo(){
     }else if(paymentMethods[payment].value!== 'credit-card'){
       paymentMethods[payment].selected = false;
     }
-    
-    
   }
 
-  // Hide non-used selections
-
+  // Hide non-used selections of payment options
   payment.addEventListener('change', (e) => {
-
     if(e.target.value === 'credit-card'){
       creditCard.hidden = false;
       paypal.hidden = true;
@@ -127,15 +139,7 @@ function paymentInfo(){
 // Name Validation
 function nameValidate(){
   const nameField = document.querySelector('#name');
-  return nameField.value === '' ? false : true
-}
-
-function removeValidation(element){
-  elParent = element.parentElement;
-  elPChild = elParent.lastElementChild;
-  elParent.classList.add('.not-valid');
-  elParent.classList.remove('.valid');
-  elPChild.style.display = 'inline';
+  return nameField.value === '' || nameField.value.indexOf(' ') >= 0 ? false : true
 }
 
 // Email Validation
@@ -144,6 +148,35 @@ function emailValidate(){
   // regex for email
   let regEx = /^[^@\s]+@[^@\s\.]+\.[^@\.\s]+$/
   return regEx.test(email.value) ? true : false
+}
+
+function emailConditionalValidation(element){
+  const email = document.querySelector('#email');
+  const emailHint = document.querySelector('#email-hint');
+  const regExEmpty = /^\s*$/.test(email.value);
+  const regExInvalid = /^[^@]+\@[^@.]+\.com$/i.test(email.value);
+  const elParent = element.parentElement;
+  const elPChild = elParent.lastElementChild;
+  
+  if(regExEmpty){
+    emailHint.textContent = 'Email cannot be blank';
+    elParent.classList.add('.not-valid');
+    elParent.classList.remove('.valid');
+    elPChild.style.display = 'inline';
+  } else if (!regExInvalid){
+    emailHint.textContent = 'Email must contain an "@" and a "."'
+    elParent.classList.add('.not-valid');
+    elParent.classList.remove('.valid');
+    elPChild.style.display = 'inline';
+  } else if(!regExEmpty){
+    elParent.classList.add('.valid');
+    elParent.classList.remove('.not-valid');
+    elPChild.style.display = 'none';
+  }else if (regExInvalid){
+    elParent.classList.add('.valid');
+    elParent.classList.remove('.not-valid');
+    elPChild.style.display = 'none';
+  }
 }
 
 // Activities Validation
@@ -156,71 +189,105 @@ function activitiesValidate(){
 function creditCardValidate(){
   const cardNumber = document.querySelector('#cc-num').value;
   const ccToString = cardNumber.toString();
+  return ccToString.length >= 13 && ccToString.length <= 16 ? true : false
+}
+// Zip Code Validation 
+function zipCodeValidate(){
   const zipCode = document.querySelector('#zip').value;
   const zipToString = zipCode.toString();
+  return zipToString.length === 5 ? true : false
+}
+// CVV Validation 
+function cvvValidation(){
   const cvv = document.querySelector('#cvv').value;
   const cvvToString = cvv.toString();
-
-  if(ccToString.length >= 13 && ccToString.length <= 16 && zipToString.length === 5 && cvvToString.length === 3){
-    return true;
-  }else {
-    return false;
-  }
+  return cvvToString.length === 3 ? true : false;
+  
 }
 
+// Helper function to remove validation
+function removeValidation(element){
+  elParent = element.parentElement;
+  elPChild = elParent.lastElementChild;
+  elParent.classList.add('.not-valid');
+  elParent.classList.remove('.valid');
+  elPChild.style.display = 'inline';
+}
+// Helper function to add validation
+function addValidation(element){
+  elParent = element.parentElement;
+  elPChild = elParent.lastElementChild;
+  elParent.classList.add('.valid');
+  elParent.classList.remove('.not-valid');
+  elPChild.style.display = 'none';
+}
+
+// Validates form elements using helper functions above
 function formValidation(){
   const pageForm = document.querySelector('form');
+  const nameElement = document.querySelector('#name');
+  const emailElement = document.querySelector('#email');
+  const activities = document.querySelector('#activities-box');
+  const creditCard = document.querySelector('#cc-num');
+  const zipCode = document.querySelector('#zip');
+  const cvv = document.querySelector('#cvv');
   
   pageForm.addEventListener('submit', (e) => {
-    nameElement = document.querySelector('#name');
-    emailParentElement = document.querySelector('#email').parentElement;
-    activitiesParent = document.querySelector('#activities');
-    creditCardParent = document.querySelector('#cc-num').parentElement;
-    zipCodeParent = document.querySelector('#zip').parentElement;
-    cvvParent = document.querySelector('#cvv').parentElement;
 
     if(!nameValidate()){
-      // nameElementParent.classList.add('.not-valid');
-      // nameElementParent.classList.remove('.valid')
-      // const nameHint = nameElementParent.lastElementChild;
-      // nameHint.style.display = 'inline';
       removeValidation(nameElement)
       e.preventDefault();
     }else if (nameValidate){
-      nameElementParent.classList.add('.valid');
-      nameElementParent.classList.remove('.not-valid')
+      addValidation(nameElement);
     }
     if (!emailValidate()){
-      emailParentElement.classList.add('.not-valid');
-      emailParentElement.classList.remove('.valid');
+      removeValidation(emailElement);
       e.preventDefault();
     }else if(emailValidate){
-      emailParentElement.classList.add('valid');
-      emailParentElement.classList.remove('.not-valid');
+      addValidation(emailElement);
     }
     if(!activitiesValidate()){
-      activitiesParent.classList.add('.not-valid')
-      activitiesParent.classList.remove('.valid');
+      removeValidation(activities);
       e.preventDefault();
+    }else if(activitiesValidate){
+      addValidation(activities);
     }
     if(!creditCardValidate()){
-      // CC number
-      creditCardParent.classList.add('.not-valid');
-      creditCardParent.classList.remove('.valid');
-      // zip code
-      zipCodeParent.classList.add('.not-valid');
-      zipCodeParent.classList.remove('.valid');
-      // cvv 
-      cvvParent.classList.add('.not-valid');
-      cvvParent.classList.remove('.valid');
-
+      removeValidation(creditCard);
       e.preventDefault();
+    }else if(creditCardValidate){
+      addValidation(creditCard)
+    }
+    if(!zipCodeValidate()){
+      removeValidation(zipCode);
+      e.preventDefault();
+    }else if(zipCodeValidate()){
+      addValidation(zipCode);
+    }
+    if(!cvvValidation()){
+      removeValidation(cvv);
+      e.preventDefault();
+    } else if (cvvValidation()){
+      addValidation(cvv);
     }
 
   })
+
+  nameElement.addEventListener('keyup', () =>{
+    if(!nameValidate()){
+      removeValidation(nameElement);
+    } else {
+      addValidation(nameElement);
+    }
+  })
+
+  emailElement.addEventListener('keyup', () => {
+    emailConditionalValidation(emailElement);
+    
+  })
 }
 
-// Accessibility
+// Accessibility changes focus on label of checkboxes
 function Accessibility(){
   const checkboxes = document.querySelectorAll('input[type=checkbox]');
 

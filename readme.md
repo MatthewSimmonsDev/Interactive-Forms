@@ -4,6 +4,6 @@ Extra Credit:
 
 1. Activities with conflicting times cannot be selected.
 
-2. Name field checks for keyup if input is invalid.
+2. Name field checks for keyup if input is blank.
 
-3. Conditional check for invalidation on email address. Checks for @ and .
+3. Conditional check for invalidation on email address. Checks for @ and . as well as if blank.

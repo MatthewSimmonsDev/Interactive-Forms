@@ -227,7 +227,7 @@ function formValidation(){
   const pageForm = document.querySelector('form');
   const nameElement = document.querySelector('#name');
   const emailElement = document.querySelector('#email');
-  const activities = document.querySelector('#activities-box');
+  const activities = document.querySelector('#activities span');
   const creditCard = document.querySelector('#cc-num');
   const zipCode = document.querySelector('#zip');
   const cvv = document.querySelector('#cvv');

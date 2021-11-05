@@ -209,16 +209,16 @@ function cvvValidation(){
 function removeValidation(element){
   elParent = element.parentElement;
   elPChild = elParent.lastElementChild;
-  elParent.classList.add('.not-valid');
-  elParent.classList.remove('.valid');
+  elParent.classList.add('not-valid');
+  elParent.classList.remove('valid');
   elPChild.style.display = 'inline';
 }
 // Helper function to add validation
 function addValidation(element){
   elParent = element.parentElement;
   elPChild = elParent.lastElementChild;
-  elParent.classList.add('.valid');
-  elParent.classList.remove('.not-valid');
+  elParent.classList.add('valid');
+  elParent.classList.remove('not-valid');
   elPChild.style.display = 'none';
 }
 
@@ -295,13 +295,13 @@ function Accessibility(){
     const parentLabel = document.querySelectorAll('input[type=checkbox]')[i].parentElement;
     checkboxes[i].addEventListener('focus', (e) => {
       if (e.target.focus) {
-        parentLabel.classList.add('.focus');
+        parentLabel.classList.add('focus');
       }
     })
 
     checkboxes[i].addEventListener('blur', (e) => {
       if (e.target.blur){
-        parentLabel.classList.remove('.focus')
+        parentLabel.classList.remove('focus')
       }
     })
   }
